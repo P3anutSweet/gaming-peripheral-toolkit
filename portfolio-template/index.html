@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Replace with one sentence about you.">
+<title>Your Name Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Fragment+Mono&family=Noto+Sans+SC:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
+<style>
+/* Layout: fixed name-and-index sidebar on the left; a white page of numbered sections (work grid, about band, what I do, six case files, contact band). Bilingual via data-lang on the root. */
+:root {
+  --bg: #ffffff;
+  --fg: #111213;
+  --muted: #6f7378;
+  --soft: #9a9ea3;
+  --line: #e4e5e6;
+  --tile: #f3f4f4;
+  --accent: #128a5c;
+  --band-bg: #0b0c0d;
+  --band-fg: #f4f4f2;
+  --band-muted: #9ca0a4;
+  --band-line: #2a2d30;
+  --shadow: rgba(17, 18, 19, 0.16);
+  --g1a: #e3e9ef; --g1b: #9db1c6;
+  --g2a: #edf1d2; --g2b: #b9d06a;
+  --g3a: #f4e7da; --g3b: #e3a57c;
+  --g4a: #ebe7f4; --g4b: #aba2d8;
+  --g5a: #ddf0ec; --g5b: #7fc3b4;
+  --g6a: #f5e9cd; --g6b: #d9b46c;
+  --f-sans: "Instrument Sans", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --f-mono: "Fragment Mono", "Noto Sans SC", ui-monospace, "Consolas", monospace;
+  --side: 248px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d0e0f; --fg: #f1f1ef; --muted: #9a9ea3; --soft: #6f7378; --line: #25282b; --tile: #17191b;
+    --accent: #45c993; --band-bg: #17191b; --band-fg: #f4f4f2; --band-muted: #9ca0a4; --band-line: #2f3236;
+    --shadow: rgba(0, 0, 0, 0.5);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d0e0f; --fg: #f1f1ef; --muted: #9a9ea3; --soft: #6f7378; --line: #25282b; --tile: #17191b;
+  --accent: #45c993; --band-bg: #17191b; --band-fg: #f4f4f2; --band-muted: #9ca0a4; --band-line: #2f3236;
+  --shadow: rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+:root[data-lang="en"] .zh { display: none !important; }
+:root:not([data-lang="en"]) .en { display: none !important; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: var(--f-sans); font-size: 16px; line-height: 1.6; font-weight: 450;
+  -webkit-font-smoothing: antialiased; letter-spacing: -0.005em;
+}
+:root:not([data-lang="en"]) body { line-height: 1.8; letter-spacing: 0; }
+a { color: inherit; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+h1, h2, h3 { margin: 0; font-weight: 500; text-wrap: balance; letter-spacing: -0.025em; }
+.mono, .label { font-family: var(--f-mono); }
+.label { font-size: 12.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--fg); }
+.label.dim { color: var(--muted); }
+.num { font-family: var(--f-mono); font-size: 12.5px; color: var(--muted); letter-spacing: 0.02em; }
+.arrow-link {
+  display: inline-flex; align-items: center; gap: 8px; font: 500 15px/1 var(--f-sans);
+  color: var(--fg); text-decoration: none; background: none; border: 0; cursor: pointer;
+  padding: 0 0 8px; border-bottom: 1px solid currentColor;
+}
+.arrow-link::after { content: "→"; transition: transform 0.2s ease; }
+.arrow-link.down::after { content: "↓"; }
+.arrow-link:hover::after { transform: translateX(3px); }
+.arrow-link.down:hover::after { transform: translateY(3px); }
+
+/* sidebar */
+.side {
+  position: fixed; inset: 0 auto 0 0; width: calc(var(--side) + env(safe-area-inset-left, 0px)); z-index: 20;
+  background: var(--bg); border-right: 1px solid var(--line);
+  padding: calc(env(safe-area-inset-top, 0px) + 26px) 24px calc(env(safe-area-inset-bottom, 0px) + 24px) calc(env(safe-area-inset-left, 0px) + 28px);
+  display: flex; flex-direction: column; gap: 40px;
+}
+.side .name { font-size: 16px; font-weight: 600; letter-spacing: 0; text-decoration: none; display: grid; gap: 2px; line-height: 1.25; }
+.side .name small { font-family: var(--f-mono); font-size: 11.5px; font-weight: 400; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+.side nav { display: grid; gap: 2px; }
+.side nav a { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; text-decoration: none; padding: 5px 0; font-size: 15px; font-weight: 500; }
+.side nav a span:last-child { font-family: var(--f-mono); font-size: 11px; color: var(--soft); }
+.side nav a:hover, .side nav a.on { color: var(--accent); }
+.side nav .sub { padding-left: 14px; font-size: 13.5px; font-weight: 450; color: var(--muted); }
+.side .foot { margin-top: auto; display: grid; gap: 16px; }
+.status { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 500; }
+.status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+.side .mail { font-family: var(--f-mono); font-size: 12px; color: var(--muted); word-break: break-all; }
+
+.lang { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--bg); width: max-content; }
+.lang button { font: 400 12px/1 var(--f-mono); letter-spacing: 0.04em; color: var(--muted); background: none; border: 0; border-radius: 999px; padding: 7px 12px; cursor: pointer; }
+.lang button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+
+/* mobile bar */
+.topbar { display: none; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
+
+/* page */
+.page { margin-left: calc(var(--side) + env(safe-area-inset-left, 0px)); }
+.wrap {
+  max-width: 1180px;
+  padding-left: max(40px, env(safe-area-inset-left, 0px));
+  padding-right: max(40px, env(safe-area-inset-right, 0px));
+}
+.sec { padding-block: 88px 0; }
+.sec-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 22px; }
+
+/* hero */
+.hero { padding-block: 40px 0; }
+.hero-top { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.hero h1 { margin-top: 40px; font-size: clamp(32px, 3.6vw, 50px); line-height: 1.12; max-width: 22em; }
+.hero h1 .g { color: var(--soft); }
+:root:not([data-lang="en"]) .hero h1 { line-height: 1.32; letter-spacing: 0; font-weight: 500; }
+.hero-links { display: flex; gap: 28px; flex-wrap: wrap; margin-top: 64px; }
+
+/* work grid */
+.work { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 44px 20px; }
+.wcard { text-decoration: none; display: grid; gap: 14px; align-content: start; min-width: 0; }
+.wtile {
+  aspect-ratio: 4 / 3; border-radius: 4px; overflow: hidden; display: grid; place-items: center; padding: 9%;
+  background: linear-gradient(140deg, var(--a) 0%, var(--b) 100%); max-width: 100%;
+}
+.wtile img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 18px 28px var(--shadow)); transition: transform 0.5s cubic-bezier(.2,.7,.2,1); }
+.wtile img.shot { height: auto; max-height: 100%; border-radius: 4px; }
+.wcard:hover .wtile img { transform: scale(1.035); }
+.wcard h3 { font-size: 16px; font-weight: 600; letter-spacing: 0.01em; text-transform: uppercase; display: flex; justify-content: space-between; gap: 12px; }
+.wcard h3 .num { text-transform: none; font-weight: 400; }
+.wcard p { margin: -6px 0 0; color: var(--muted); font-size: 15px; max-width: 34em; }
+
+/* dark bands */
+.band { background: var(--band-bg); color: var(--band-fg); margin-top: 96px; }
+.band .wrap { padding-block: 72px 76px; }
+.band .num, .band .label.dim { color: var(--band-muted); }
+.about-grid { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 40px; }
+.about-text { display: grid; gap: 22px; max-width: 760px; }
+.about-text p { margin: 0; font-size: clamp(18px, 1.6vw, 21px); line-height: 1.5; font-weight: 500; }
+:root[data-lang="en"] .about-text p { text-transform: uppercase; font-size: clamp(16px, 1.4vw, 19px); letter-spacing: 0.005em; line-height: 1.45; }
+.facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; margin-top: 56px; padding-top: 22px; border-top: 1px solid var(--band-line); }
+.facts div { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.facts b { font-weight: 500; font-size: 15px; line-height: 1.45; }
+
+/* what I do */
+.svc-title { font-size: clamp(28px, 3vw, 40px); display: flex; align-items: baseline; gap: 16px; margin-bottom: 26px; }
+.svc { border-top: 1px solid var(--line); }
+.svc div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; padding-block: 20px; border-bottom: 1px solid var(--line); }
+.svc b { font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.01em; }
+.svc span { color: var(--muted); font-size: 15px; }
+
+/* case files */
+.case { padding-block: 104px 0; }
+.case > .wrap { border-top: 1px solid var(--line); padding-top: 26px; }
+.case-grid { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; }
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 28px); align-self: start; display: grid; gap: 18px; }
+.rail .code { font-family: var(--f-mono); font-size: 12.5px; letter-spacing: 0.04em; }
+.rail dl { margin: 0; display: grid; gap: 14px; }
+.rail dt { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.rail dd { margin: 2px 0 0; font-size: 14px; line-height: 1.5; }
+.body { min-width: 0; display: grid; gap: 40px; }
+.case h2 { font-size: clamp(28px, 3vw, 42px); line-height: 1.15; }
+:root:not([data-lang="en"]) .case h2 { line-height: 1.35; letter-spacing: 0; }
+.case .intro { font-size: 17.5px; max-width: 40em; margin: 18px 0 0; color: var(--muted); }
+
+.findings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+.finding { border-top: 1px solid var(--fg); padding-top: 14px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.finding .label { color: var(--muted); }
+.finding h3 { font-size: 19px; line-height: 1.3; }
+.finding p { margin: 0; font-size: 14.5px; color: var(--muted); }
+.decision { background: var(--tile); border-radius: 4px; padding: 24px 28px; max-width: 820px; }
+.decision .label { color: var(--accent); }
+.decision p { margin: 8px 0 0; font-size: 17px; }
+
+figure { margin: 0; display: grid; gap: 10px; min-width: 0; align-content: start; }
+figure img { width: 100%; height: auto; display: block; border-radius: 4px; background: var(--tile); }
+figcaption { font-size: 13px; color: var(--muted); line-height: 1.5; }
+figcaption .mono { color: var(--fg); margin-right: 8px; font-size: 12px; }
+.figs-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px 20px; }
+.figs-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.figs-wide { display: grid; grid-template-columns: 1.5fr 1fr; gap: 28px; align-items: start; }
+.figs-3 img { aspect-ratio: 4 / 3; object-fit: cover; }
+.tall-crop { max-height: 380px; object-fit: cover; object-position: center 35%; }
+
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.item { min-width: 0; }
+.item h3 { font-size: 21px; line-height: 1.3; }
+.item p { margin: 8px 0 0; font-size: 15.5px; }
+.item .label { margin-bottom: 10px; display: block; color: var(--muted); }
+.split .item { border-top: 1px solid var(--fg); padding-top: 14px; }
+
+.diagram { background: var(--tile); border-radius: 4px; padding: 22px 18px 14px; overflow-x: auto; }
+.diagram svg { display: block; width: 100%; min-width: 620px; height: auto; }
+.d-box { fill: var(--bg); stroke: var(--line); stroke-width: 1.4; }
+.d-focus { fill: var(--bg); stroke: var(--accent); stroke-width: 1.8; }
+.d-line { stroke: var(--soft); stroke-width: 1.4; fill: none; }
+.d-line.acc { stroke: var(--accent); stroke-width: 1.8; }
+.d-line.dash { stroke-dasharray: 5 4; }
+.d-head { fill: var(--soft); }
+.d-head.acc { fill: var(--accent); }
+.d-t { fill: var(--fg); font-family: var(--f-sans); font-size: 14px; font-weight: 600; }
+.d-s { fill: var(--muted); font-family: var(--f-mono); font-size: 11px; }
+.d-cap { fill: var(--muted); font-family: var(--f-sans); font-size: 12px; }
+
+table.cov { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tablewrap { overflow-x: auto; border-top: 1px solid var(--fg); min-width: 0; }
+table.cov th, table.cov td { text-align: left; padding: 12px 12px 12px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.cov th { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); font-weight: 400; }
+table.cov td:first-child { font-weight: 600; white-space: nowrap; }
+table.cov td.n { font-family: var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.cards2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+.card { border-top: 1px solid var(--fg); padding-top: 14px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.card h3 { font-size: 21px; }
+.card .when { font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+.card ul { margin: 4px 0 0; padding-left: 18px; font-size: 15px; }
+.card li { margin: 5px 0; }
+.case a { text-underline-offset: 3px; }
+
+/* q&a */
+.faq-grid { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); gap: 48px; align-items: start; }
+.faq-intro { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 28px); display: grid; gap: 14px; }
+.faq-intro h2 { font-size: clamp(28px, 3vw, 40px); }
+.faq-intro p { margin: 0; color: var(--muted); max-width: 22em; }
+.faq { display: grid; gap: 0; min-width: 0; }
+.faq > .label { padding-block: 34px 12px; }
+.faq > .label:first-child { padding-top: 0; }
+.qa { border-top: 1px solid var(--line); padding-block: 16px 18px; display: grid; gap: 6px; }
+.qa h3 { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; display: flex; gap: 12px; }
+.qa h3::before { content: "+"; font-weight: 400; color: var(--soft); }
+.qa p { margin: 0 0 0 22px; color: var(--muted); font-size: 15px; max-width: 42em; }
+
+/* contact */
+.contact-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+.contact-grid h2 { font-size: clamp(30px, 3.2vw, 44px); margin-top: 20px; }
+.contact-info { display: grid; gap: 22px; margin-top: 40px; }
+.contact-info > div { display: grid; gap: 6px; justify-items: start; }
+.band .arrow-link { color: var(--band-fg); }
+.contact-info b { font-weight: 500; font-size: 16px; }
+.copy-row { display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; }
+.copy-row b { font-family: var(--f-mono); font-weight: 400; font-size: 15px; user-select: all; }
+.copy-btn { font: 400 12px/1 var(--f-mono); letter-spacing: 0.04em; text-transform: uppercase; color: var(--band-fg); background: none; border: 1px solid var(--band-line); border-radius: 999px; padding: 7px 12px; cursor: pointer; }
+.copy-btn:hover { border-color: var(--band-fg); }
+.lineup { background: linear-gradient(160deg, #f6f6f5, #dcdedf); border-radius: 4px; padding: 28px 22px 18px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 12px; align-items: end; }
+.lineup figure { justify-items: center; }
+.lineup img { background: none; height: 120px; width: auto; max-width: 100%; object-fit: contain; filter: drop-shadow(0 12px 14px rgba(17, 18, 19, 0.18)); }
+.lineup figcaption { font-family: var(--f-mono); font-size: 11px; color: #55595d; }
+.band .hint { font-size: 13px; color: var(--band-muted); }
+
+/* footer */
+.foot-note { background: var(--tile); margin-top: 96px; }
+.foot-note .wrap { padding-block: 40px calc(env(safe-area-inset-bottom, 0px) + 40px); display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 40px; }
+.foot-note p { margin: 8px 0 0; font-size: 14px; color: var(--muted); max-width: 40em; }
+.foot-links { display: grid; gap: 4px; align-content: start; font-size: 14px; }
+.foot-links a { text-decoration: none; }
+.foot-links a:hover { color: var(--accent); }
+
+@media (max-width: 1080px) {
+  .findings { grid-template-columns: 1fr; gap: 22px; }
+  .case-grid { grid-template-columns: 180px minmax(0, 1fr); gap: 32px; }
+}
+@media (max-width: 960px) {
+  .side { display: none; }
+  .page { margin-left: 0; }
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line);
+    padding-block: 12px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .topbar .name { font-weight: 600; text-decoration: none; font-size: 15px; }
+  .wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .case-grid, .about-grid, .contact-grid, .faq-grid { grid-template-columns: 1fr; gap: 24px; }
+  .rail, .faq-intro { position: static; }
+  .rail dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .figs-wide, .split, .cards2, .foot-note .wrap { grid-template-columns: 1fr; }
+  .rail { scroll-margin-top: 70px; }
+  .case, .sec, [id] { scroll-margin-top: 64px; }
+}
+@media (max-width: 640px) {
+  .work, .figs-2, .figs-3, .svc div { grid-template-columns: 1fr; }
+  .svc div { gap: 6px; }
+  .hero h1 { margin-top: 28px; }
+  .hero-links { margin-top: 40px; }
+  .sec { padding-block: 64px 0; }
+  .case { padding-block: 72px 0; }
+  .band { margin-top: 72px; }
+  .band .wrap { padding-block: 52px 56px; }
+}
+@media print {
+  .side, .topbar, .hero-links { display: none; }
+  .page { margin-left: 0; }
+  .case { break-before: page; padding-block: 0; }
+  .rail { position: static; }
+  figure, .finding, .card, .diagram, .tablewrap, .item, .wcard { break-inside: avoid; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .wtile img, .arrow-link::after { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<aside class="side" aria-label="Site">
+  <a class="name" href="#top"><span class="en">Your Name</span><span class="zh">你的名字</span><small><span class="en">你的名字</span><span class="zh">Your Name</span></small></a>
+  <nav aria-label="Sections">
+    <a href="#top"><span><span class="en">Home</span><span class="zh">首页</span></span><span>000</span></a>
+    <a href="#work"><span><span class="en">Work</span><span class="zh">作品</span></span><span>001</span></a>
+    <a class="sub" href="#case-one"><span><span class="en">Case one</span><span class="zh">案例一</span></span><span>004</span></a>
+    <a href="#about"><span><span class="en">About</span><span class="zh">关于我</span></span><span>002</span></a>
+    <a href="#faq"><span><span class="en">Q&amp;A</span><span class="zh">常见问题</span></span><span>005</span></a>
+    <a href="#contact"><span><span class="en">Contact</span><span class="zh">联系</span></span><span>006</span></a>
+  </nav>
+  <div class="foot">
+    <span class="status"><span class="en">Your current role</span><span class="zh">你现在的职位</span></span>
+    <span class="mail">you@example.com</span>
+    <div class="lang" role="group" aria-label="Language / 语言">
+      <button type="button" id="lang-zh" data-set="zh" aria-pressed="false">中文</button>
+      <button type="button" id="lang-en" data-set="en" aria-pressed="true">EN</button>
+    </div>
+  </div>
+</aside>
+
+<div class="page" id="top">
+<header class="topbar">
+  <a class="name" href="#top"><span class="en">Your Name</span><span class="zh">你的名字</span></a>
+  <div class="lang" role="group" aria-label="Language / 语言">
+    <button type="button" id="lang-zh-m" data-set="zh" aria-pressed="false">中文</button>
+    <button type="button" id="lang-en-m" data-set="en" aria-pressed="true">EN</button>
+  </div>
+</header>
+<main>
+<section class="hero"><div class="wrap">
+  <div class="hero-top"><span class="label"><span class="en">Your title · Your field</span><span class="zh">职位 · 领域</span></span><span class="label dim"><span class="en">City, Country</span><span class="zh">城市</span></span></div>
+  <h1><span class="en"><span class="g">One line on who you are.</span> One line on what you do differently.</span><span class="zh"><span class="g">一句话说明你是谁。</span>一句话说明你和别人做得不一样的地方。</span></h1>
+  <div class="hero-links"><a class="arrow-link down" href="#work"><span class="en">Selected work</span><span class="zh">查看作品</span></a><a class="arrow-link" href="#contact"><span class="en">Contact</span><span class="zh">联系我</span></a></div>
+</div></section>
+
+<section class="sec" id="work"><div class="wrap">
+  <div class="sec-head"><span class="num">(001)</span><span class="label"><span class="en">Selected work</span><span class="zh">作品</span></span></div>
+  <div class="work">
+    <a class="wcard" href="#case-one"><div class="wtile" style="--a: var(--g1a); --b: var(--g1b)"><img class="shot" src="https://placehold.co/1200x800/png?text=Screenshot" alt="Example screenshot"></div>
+      <h3><span><span class="en">Case one</span><span class="zh">案例一</span></span><span class="num">004</span></h3>
+      <p><span class="en">One sentence: the problem, what you did, what changed.</span><span class="zh">一句话：问题、你做了什么、结果如何。</span></p></a>
+    <a class="wcard" href="#case-one"><div class="wtile" style="--a: var(--g2a); --b: var(--g2b)"><img class="shot" src="https://placehold.co/1200x800/png?text=Product" alt="Example product image"></div>
+      <h3><span><span class="en">Case two</span><span class="zh">案例二</span></span><span class="num">005</span></h3>
+      <p><span class="en">Copy this card for each project. Tile colors are the --g1a to --g6b tokens.</span><span class="zh">每个项目复制一张卡片。底色在 --g1a 到 --g6b 里改。</span></p></a>
+  </div>
+</div></section>
+
+<section class="band" id="about"><div class="wrap"><div class="about-grid">
+  <div class="sec-head" style="flex-direction:column;justify-content:flex-start;gap:10px"><span class="num">(002)</span><span class="label dim"><span class="en">About</span><span class="zh">关于我</span></span></div>
+  <div><div class="about-text"><p class="en">Two or three sentences about your work and what you care about.</p><p class="zh">用两三句话介绍你的工作和你在意的事情。</p></div>
+    <div class="facts"><div><span class="label dim"><span class="en">Markets</span><span class="zh">市场</span></span><b>A · B · C</b></div><div><span class="label dim"><span class="en">Focus</span><span class="zh">方向</span></span><b>A · B</b></div><div><span class="label dim"><span class="en">Tools</span><span class="zh">工具</span></span><b>A · B</b></div><div><span class="label dim"><span class="en">Languages</span><span class="zh">语言</span></span><b>A · B</b></div></div></div>
+</div></div></section>
+
+<section class="sec" id="services"><div class="wrap">
+  <h2 class="svc-title"><span class="num">(003)</span><span><span class="en">What I do</span><span class="zh">我做什么</span></span></h2>
+  <div class="svc"><div><b><span class="en">Skill one</span><span class="zh">能力一</span></b><span><span class="en">One line on what this covers.</span><span class="zh">一句话说明。</span></span></div><div><b><span class="en">Skill two</span><span class="zh">能力二</span></b><span><span class="en">One line on what this covers.</span><span class="zh">一句话说明。</span></span></div></div>
+</div></section>
+
+<section class="case" id="case-one"><div class="wrap case-grid">
+  <aside class="rail"><span class="num">(004)</span><span class="code">PROJECT · TAG</span>
+    <dl><div><dt><span class="en">Role</span><span class="zh">角色</span></dt><dd><span class="en">Your role</span><span class="zh">你的角色</span></dd></div><div><dt><span class="en">When</span><span class="zh">时间</span></dt><dd>2026.01 – 2026.06</dd></div></dl></aside>
+  <div class="body">
+    <div><h2><span class="en">Case one: the headline finding</span><span class="zh">案例一：一句话的核心发现</span></h2><p class="intro"><span class="en">The question you had to answer and the evidence you used.</span><span class="zh">你要回答的问题，以及用了哪些证据。</span></p></div>
+    <div class="findings">
+      <div class="finding"><span class="label"><span class="en">Finding · One</span><span class="zh">发现 · 一</span></span><h3><span class="en">Short claim</span><span class="zh">简短结论</span></h3><p><span class="en">The evidence behind it.</span><span class="zh">支撑它的证据。</span></p></div>
+      <div class="finding"><span class="label"><span class="en">Finding · Two</span><span class="zh">发现 · 二</span></span><h3><span class="en">Short claim</span><span class="zh">简短结论</span></h3><p><span class="en">The evidence behind it.</span><span class="zh">支撑它的证据。</span></p></div>
+      <div class="finding"><span class="label"><span class="en">Finding · Three</span><span class="zh">发现 · 三</span></span><h3><span class="en">Short claim</span><span class="zh">简短结论</span></h3><p><span class="en">The evidence behind it.</span><span class="zh">支撑它的证据。</span></p></div>
+    </div>
+    <div class="decision"><span class="label"><span class="en">Decision</span><span class="zh">决定</span></span><p><span class="en">What was decided and what happened next.</span><span class="zh">最后的决定和后续结果。</span></p></div>
+    <figure><img src="https://placehold.co/1600x900/png?text=Figure" alt="Example figure"><figcaption><span class="mono"><span class="en">Fig.</span><span class="zh">图</span> 1.1</span><span class="en">Caption that says what the reader should notice.</span><span class="zh">图注：读者应该注意什么。</span></figcaption></figure>
+  </div>
+</div></section>
+
+<section class="sec" id="faq"><div class="wrap faq-grid">
+  <div class="faq-intro"><span class="num">(005)</span><h2><span class="en">Questions people ask</span><span class="zh">常见问题</span></h2><p><span class="en">Answers also go into the FAQPage data for search engines.</span><span class="zh">答案同时写进给搜索引擎的 FAQPage 数据。</span></p></div>
+  <div class="faq"><span class="label dim"><span class="en">About me</span><span class="zh">关于我</span></span>
+    <div class="qa"><h3><span class="en">What do you do?</span><span class="zh">你做什么工作？</span></h3><p><span class="en">Answer in two or three plain sentences.</span><span class="zh">用两三句话直接回答。</span></p></div>
+    <div class="qa"><h3><span class="en">Which project are you proudest of?</span><span class="zh">你最满意的项目是哪个？</span></h3><p><span class="en">Answer in two or three plain sentences.</span><span class="zh">用两三句话直接回答。</span></p></div>
+  </div>
+</div></section>
+
+<section class="band" id="contact"><div class="wrap contact-grid">
+  <div><span class="num">(006)</span><h2><span class="en">Get in touch.</span><span class="zh">联系我</span></h2>
+    <div class="contact-info"><div><span class="label dim"><span class="en">Based in</span><span class="zh">所在地</span></span><b>City, Country</b></div>
+      <div><span class="label dim"><span class="en">Email</span><span class="zh">邮箱</span></span><div class="copy-row"><b id="mail">you@example.com</b><button type="button" class="copy-btn" id="copy-mail"><span class="en">Copy</span><span class="zh">复制</span></button></div><span class="hint" id="copy-hint" aria-live="polite"></span></div></div></div>
+  <div class="lineup"><figure><img src="https://placehold.co/400x400/png?text=1" alt=""><figcaption>Item</figcaption></figure><figure><img src="https://placehold.co/400x400/png?text=2" alt=""><figcaption>Item</figcaption></figure><figure><img src="https://placehold.co/400x400/png?text=3" alt=""><figcaption>Item</figcaption></figure></div>
+</div></section>
+</main>
+<footer class="foot-note"><div class="wrap"><div><span class="label dim">Note</span><p>Anything a reader should know about what is and isn't shown.</p><p class="num" style="margin-top:20px">(2026)</p></div>
+  <nav class="foot-links"><span class="label dim">Site</span><a href="#work">Work</a><a href="#about">About</a><a href="#faq">Q&amp;A</a><a href="#contact">Contact</a></nav></div></footer>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var buttons = document.querySelectorAll(".lang button");
+  function setLang(lang) {
+    root.setAttribute("data-lang", lang);
+    root.setAttribute("lang", lang === "en" ? "en" : "zh-CN");
+    buttons.forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-set") === lang)); });
+    try { localStorage.setItem("portfolio-lang", lang); } catch (e) {}
+  }
+  var start = "en";
+  try {
+    var saved = localStorage.getItem("portfolio-lang");
+    if (saved === "en" || saved === "zh") { start = saved; }
+    else if (/^zh/i.test(navigator.language || "")) { start = "zh"; }
+  } catch (e) {
+    if (/^zh/i.test(navigator.language || "")) { start = "zh"; }
+  }
+  setLang(start);
+  buttons.forEach(function (b) { b.addEventListener("click", function () { setLang(b.getAttribute("data-set")); }); });
+
+  var btn = document.getElementById("copy-mail"), hint = document.getElementById("copy-hint"), mail = document.getElementById("mail");
+  function say(zh, en) { hint.textContent = root.getAttribute("data-lang") === "en" ? en : zh; }
+  function selectMail() { var r = document.createRange(); r.selectNodeContents(mail); var s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+  btn.addEventListener("click", function () {
+    try {
+      navigator.clipboard.writeText(mail.textContent).then(function () { say("已复制", "Copied"); }, function () { selectMail(); say("已选中，按 Ctrl+C 复制", "Selected. Press Ctrl+C to copy"); });
+    } catch (e) { selectMail(); say("已选中，按 Ctrl+C 复制", "Selected. Press Ctrl+C to copy"); }
+  });
+
+  var links = document.querySelectorAll(".side nav a[href^='#']");
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        links.forEach(function (a) { a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id); });
+      });
+    }, { rootMargin: "-40% 0px -55% 0px" });
+    document.querySelectorAll("main section[id]").forEach(function (s) { io.observe(s); });
+  }
+})();
+</script>
+
+</body>
+</html>

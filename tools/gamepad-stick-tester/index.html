@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Controller Stick Tester</title>
+<meta name="description" content="Check a game controller's stick drift at rest and circularity in the browser. Works with Hall effect, TMR and potentiometer sticks.">
+<style>
+:root { --bg: #fff; --fg: #111213; --muted: #6f7378; --line: #e4e5e6; --tile: #f3f4f4; --accent: #128a5c; --warn: #c2410c; color-scheme: light; }
+@media (prefers-color-scheme: dark) { :root { --bg: #0d0e0f; --fg: #f1f1ef; --muted: #9a9ea3; --line: #25282b; --tile: #17191b; --accent: #45c993; --warn: #fb923c; color-scheme: dark; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 system-ui, sans-serif; }
+main { max-width: 900px; margin: 0 auto; padding: 40px 16px 60px; display: grid; gap: 22px; }
+h1 { margin: 0; font-weight: 600; letter-spacing: -0.02em; }
+p { margin: 0; color: var(--muted); }
+.sticks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.stick { display: grid; gap: 10px; }
+canvas { width: 100%; aspect-ratio: 1; background: var(--tile); border-radius: 6px; }
+dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 14px; }
+dt { color: var(--muted); }
+dd { margin: 0; font-family: ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
+button { font: inherit; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); cursor: pointer; width: max-content; }
+#status { font-weight: 600; }
+@media (max-width: 560px) { .sticks { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Controller stick tester</h1>
+  <p>Connect a controller and press any button. Leave the sticks untouched to measure rest drift, then roll each stick slowly around its full edge a few times to measure circularity. Press Reset between controllers.</p>
+  <p id="status">No controller detected yet.</p>
+  <div class="sticks">
+    <div class="stick"><canvas id="c0" width="600" height="600" aria-label="Left stick"></canvas>
+      <dl><dt>Left stick</dt><dd id="v0">-</dd><dt>Rest drift</dt><dd id="d0">-</dd><dt>Circularity error</dt><dd id="r0">-</dd></dl></div>
+    <div class="stick"><canvas id="c1" width="600" height="600" aria-label="Right stick"></canvas>
+      <dl><dt>Right stick</dt><dd id="v1">-</dd><dt>Rest drift</dt><dd id="d1">-</dd><dt>Circularity error</dt><dd id="r1">-</dd></dl></div>
+  </div>
+  <button type="button" id="reset">Reset</button>
+  <p>Rest drift is the largest stick reading while untouched; under 0.02 is good, above 0.08 usually needs a larger deadzone. Circularity error is the average gap between the stick's edge and a perfect circle, which matters for aiming and movement at full tilt. Magnetic sticks (Hall effect, TMR) should hold low drift over time; potentiometer sticks drift as they wear.</p>
+</main>
+<script>
+(function () {
+  var trails = [[], []], drift = [0, 0], moved = [false, false];
+  var bins = [new Array(72).fill(0), new Array(72).fill(0)];
+  document.getElementById("reset").addEventListener("click", function () {
+    trails = [[], []]; drift = [0, 0]; moved = [false, false]; bins = [new Array(72).fill(0), new Array(72).fill(0)];
+  });
+  function css(n) { return getComputedStyle(document.documentElement).getPropertyValue(n); }
+  function draw(i, x, y) {
+    var cv = document.getElementById("c" + i), cx = cv.getContext("2d"), s = cv.width, r = s * 0.42, c = s / 2;
+    cx.clearRect(0, 0, s, s);
+    cx.strokeStyle = css("--line"); cx.lineWidth = 3;
+    cx.beginPath(); cx.arc(c, c, r, 0, Math.PI * 2); cx.stroke();
+    cx.beginPath(); cx.moveTo(c - r, c); cx.lineTo(c + r, c); cx.moveTo(c, c - r); cx.lineTo(c, c + r); cx.stroke();
+    cx.fillStyle = css("--muted");
+    trails[i].forEach(function (p) { cx.fillRect(c + p[0] * r - 1.5, c + p[1] * r - 1.5, 3, 3); });
+    cx.fillStyle = css("--accent");
+    cx.beginPath(); cx.arc(c + x * r, c + y * r, 12, 0, Math.PI * 2); cx.fill();
+  }
+  function loop() {
+    var pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    var gp = null;
+    for (var k = 0; k < pads.length; k++) if (pads[k]) { gp = pads[k]; break; }
+    if (gp) {
+      document.getElementById("status").textContent = "Connected: " + gp.id;
+      for (var i = 0; i < 2; i++) {
+        var x = gp.axes[i * 2] || 0, y = gp.axes[i * 2 + 1] || 0, m = Math.hypot(x, y);
+        if (m > 0.3) moved[i] = true;
+        if (!moved[i]) drift[i] = Math.max(drift[i], m);
+        if (m > 0.05) { trails[i].push([x, y]); if (trails[i].length > 3000) trails[i].shift(); }
+        if (m > 0.7) { var b = Math.floor(((Math.atan2(y, x) + Math.PI) / (Math.PI * 2)) * 72) % 72; bins[i][b] = Math.max(bins[i][b], m); }
+        var filled = bins[i].filter(function (v) { return v > 0; });
+        var err = filled.length > 36 ? filled.reduce(function (a, v) { return a + Math.abs(1 - Math.min(v, 1.5)); }, 0) / filled.length : null;
+        document.getElementById("v" + i).textContent = x.toFixed(3) + ", " + y.toFixed(3);
+        document.getElementById("d" + i).textContent = moved[i] ? drift[i].toFixed(3) + " (measured before first move)" : drift[i].toFixed(3) + " (measuring)";
+        document.getElementById("r" + i).textContent = err === null ? "roll the stick around its edge" : (err * 100).toFixed(1) + "%";
+        draw(i, x, y);
+      }
+    }
+    requestAnimationFrame(loop);
+  }
+  draw(0, 0, 0); draw(1, 0, 0);
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

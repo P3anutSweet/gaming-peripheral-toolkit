@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mouse Polling Rate Tester</title>
+<meta name="description" content="Measure your mouse's real polling rate (1000, 4000 or 8000 Hz) in the browser. Single file, no tracking.">
+<style>
+:root { --bg: #fff; --fg: #111213; --muted: #6f7378; --line: #e4e5e6; --tile: #f3f4f4; --accent: #128a5c; color-scheme: light; }
+@media (prefers-color-scheme: dark) { :root { --bg: #0d0e0f; --fg: #f1f1ef; --muted: #9a9ea3; --line: #25282b; --tile: #17191b; --accent: #45c993; color-scheme: dark; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 system-ui, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 40px 16px 60px; display: grid; gap: 24px; }
+h1 { margin: 0; font-weight: 600; letter-spacing: -0.02em; }
+p { margin: 0; color: var(--muted); }
+#pad { height: 300px; border-radius: 6px; background: var(--tile); display: grid; place-items: center; text-align: center; cursor: crosshair; user-select: none; touch-action: none; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.stats div { border-top: 1px solid var(--fg); padding-top: 8px; }
+.stats b { display: block; font: 600 28px/1.2 ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
+.stats span { font-size: 13px; color: var(--muted); }
+canvas { width: 100%; height: 140px; background: var(--tile); border-radius: 6px; }
+@media (max-width: 560px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Mouse polling rate tester</h1>
+  <p>Move the mouse quickly in circles inside the grey area. The page counts raw pointer reports per second. Chrome and Edge report every update through <code>pointerrawupdate</code>; other browsers cap at the display refresh rate, so use a Chromium browser for 4K and 8K mice.</p>
+  <div id="pad"><div><strong>Move the mouse here</strong><br><span id="api"></span></div></div>
+  <div class="stats">
+    <div><b id="now">0</b><span>Hz, last second</span></div>
+    <div><b id="peak">0</b><span>Hz, peak</span></div>
+    <div><b id="avg">0</b><span>ms, average interval</span></div>
+    <div><b id="guess">-</b><span>Likely setting</span></div>
+  </div>
+  <canvas id="chart" width="1600" height="280" aria-label="Reports per second over the last 30 seconds"></canvas>
+  <p>Tips: turn off other heavy tabs, plug the receiver into a rear USB port, and move fast. At 8,000 Hz the mouse must move every 0.125 ms to fill every report, so slow movement reads lower than the setting.</p>
+</main>
+<script>
+(function () {
+  var pad = document.getElementById("pad");
+  var raw = "onpointerrawupdate" in pad;
+  document.getElementById("api").textContent = raw ? "Using pointerrawupdate (uncapped)" : "Using pointermove (capped by your browser)";
+  var stamps = [], history = [], peak = 0, lastT = 0, gaps = [];
+  function onMove(e) {
+    var t = e.timeStamp;
+    if (lastT) { var g = t - lastT; if (g > 0 && g < 50) { gaps.push(g); if (gaps.length > 4000) gaps.shift(); } }
+    lastT = t; stamps.push(t);
+  }
+  pad.addEventListener(raw ? "pointerrawupdate" : "pointermove", onMove);
+  var levels = [125, 250, 500, 1000, 2000, 4000, 8000];
+  function guess(hz) { if (hz < 60) return "-"; var best = levels[0]; levels.forEach(function (l) { if (Math.abs(l - hz) < Math.abs(best - hz)) best = l; }); return best >= 1000 ? best / 1000 + "K" : String(best); }
+  var cv = document.getElementById("chart"), cx = cv.getContext("2d");
+  function draw() {
+    var css = getComputedStyle(document.documentElement);
+    cx.clearRect(0, 0, cv.width, cv.height);
+    var max = Math.max(1000, peak * 1.15);
+    cx.strokeStyle = css.getPropertyValue("--line"); cx.lineWidth = 2;
+    [1000, 4000, 8000].forEach(function (l) { if (l > max) return; var y = cv.height - l / max * cv.height; cx.beginPath(); cx.moveTo(0, y); cx.lineTo(cv.width, y); cx.stroke(); });
+    cx.strokeStyle = css.getPropertyValue("--accent"); cx.lineWidth = 4; cx.beginPath();
+    history.forEach(function (v, i) { var x = i / 29 * cv.width, y = cv.height - v / max * cv.height; i ? cx.lineTo(x, y) : cx.moveTo(x, y); });
+    cx.stroke();
+  }
+  setInterval(function () {
+    var now = performance.now();
+    while (stamps.length && stamps[0] < now - 1000) stamps.shift();
+    var hz = stamps.length; peak = Math.max(peak, hz);
+    history.push(hz); if (history.length > 30) history.shift();
+    var avg = gaps.length ? gaps.reduce(function (a, b) { return a + b; }, 0) / gaps.length : 0;
+    document.getElementById("now").textContent = hz;
+    document.getElementById("peak").textContent = peak;
+    document.getElementById("avg").textContent = avg ? avg.toFixed(3) : "0";
+    document.getElementById("guess").textContent = guess(peak);
+    draw();
+  }, 250);
+})();
+</script>
+</body>
+</html>

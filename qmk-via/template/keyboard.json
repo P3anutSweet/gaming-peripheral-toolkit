@@ -1,0 +1,35 @@
+{
+    "manufacturer": "Thunderobot",
+    "keyboard_name": "ZERO98",
+    "maintainer": "P3anutSweet",
+    "url": "https://github.com/P3anutSweet/gaming-peripheral-toolkit",
+    "processor": "TODO_MCU (for example STM32F072 or RP2040)",
+    "bootloader": "TODO_BOOTLOADER (for example stm32-dfu or rp2040)",
+    "usb": {
+        "vid": "0x0000",
+        "pid": "0x0000",
+        "device_version": "1.0.0",
+        "polling_interval": 1
+    },
+    "features": {
+        "bootmagic": true,
+        "extrakey": true,
+        "mousekey": true,
+        "nkro": true
+    },
+    "diode_direction": "COL2ROW",
+    "matrix_pins": {
+        "cols": ["TODO_C0", "TODO_C1"],
+        "rows": ["TODO_R0", "TODO_R1"]
+    },
+    "layouts": {
+        "LAYOUT": {
+            "layout": [
+                {"label": "Esc", "matrix": [0, 0], "x": 0, "y": 0},
+                {"label": "F1", "matrix": [0, 1], "x": 1, "y": 0},
+                {"label": "Tab", "matrix": [1, 0], "x": 0, "y": 1},
+                {"label": "Q", "matrix": [1, 1], "x": 1, "y": 1}
+            ]
+        }
+    }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "Thunderobot ZERO98 (unofficial template)",
+  "vendorId": "0x0000",
+  "productId": "0x0000",
+  "matrix": { "rows": 2, "cols": 2 },
+  "keycodes": ["qmk_lighting"],
+  "menus": [],
+  "layouts": {
+    "keymap": [
+      ["0,0", "0,1"],
+      ["1,0", "1,1"]
+    ]
+  }
+}
