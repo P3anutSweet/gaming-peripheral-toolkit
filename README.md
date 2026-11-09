@@ -24,4 +24,4 @@ Issues and pull requests are welcome, especially keyboard matrix and pin data fo
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+GPL-3.0. See [LICENSE](LICENSE).
