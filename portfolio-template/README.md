@@ -1,6 +1,6 @@
 # Bilingual portfolio template
 
-The one-page layout behind [portfolio.sunsetboulevard.ca](https://portfolio.sunsetboulevard.ca/): a fixed side index, a grid of project cards, numbered case files, a Q&A section and a contact band. English and Chinese live in the same file and switch with the EN / 中文 buttons.
+An earlier one-page portfolio layout: a fixed side index, a grid of project cards, numbered case files, a Q&A section and a contact band. English and Chinese live in the same file and switch with the EN / 中文 buttons.
 
 ## Use it
 
@@ -12,6 +12,6 @@ The one-page layout behind [portfolio.sunsetboulevard.ca](https://portfolio.suns
 
 ## Make it findable
 
-For search and AI answer engines, add a `robots.txt` that allows crawlers, a `sitemap.xml`, an `llms.txt` summary, and JSON-LD `Person` and `FAQPage` data in the `<head>`. View the source of portfolio.sunsetboulevard.ca for a working example.
+For search and AI answer engines, add a `robots.txt` that allows crawlers, a `sitemap.xml`, an `llms.txt` summary, and JSON-LD `Person` and `FAQPage` data in the `<head>`. Adapt these files to your own deployed URLs; the live portfolio has evolved separately from this template.
 
 Fonts: Instrument Sans, Fragment Mono and Noto Sans SC from Google Fonts, with system fallbacks.
